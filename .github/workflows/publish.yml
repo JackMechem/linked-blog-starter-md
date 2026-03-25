@@ -15,9 +15,20 @@ jobs:
     steps:
       - name: Checkout main repository
         uses: actions/checkout@v3
+        with:
+          path: temp_md
+
+      - name: Initialize and update submodule
+        run: git submodule update --init --recursive
 
       - name: Checkout linked blog starter repo as a submodule
-        run: git submodule update --init --recursive --remote
+        uses: actions/checkout@v3
+        with:
+          path: temp_blog
+          repository: ${{ env.BLOG_REPO }}
+
+      - name: Ensure temp_blog directory exists
+        run: mkdir -p temp_blog/common_md
 
       - name: Install obsidian-export
         run: |
@@ -26,12 +37,11 @@ jobs:
 
       - name: Run obsidian-export
         run: |
-          rm -rf temp_blog/common_md && mkdir temp_blog/common_md
           ./obsidian-export_Linux-x86_64.bin ./temp_md/${{ env.PUBLISH_DIR }} temp_blog/common_md
 
       - name: Move blog dir to currDir
         run: |
-          cp -r temp_blog/. ./
+          cp -r temp_blog/. .
           rm -rf temp_blog
           rm -rf temp_md
 

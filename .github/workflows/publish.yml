@@ -18,8 +18,13 @@ jobs:
         with:
           path: temp_md
 
+      - name: Ensure submodule directory exists
+        run: mkdir -p .git/modules/temp_blog
+
       - name: Initialize and update submodule
-        run: git submodule update --init --recursive
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
 
       - name: Checkout linked blog starter repo as a submodule
         uses: actions/checkout@v3
